@@ -6,7 +6,7 @@ import mapboxgl from 'mapbox-gl';
 import { createPortal } from 'react-dom';
 import { get, getDatabase, onValue, ref, set, update } from "firebase/database";
 
-export default function SimpleMap({ updateMarkers }: any ): any {
+export default function SimpleMap({ updateMarkers, userId }: any ): any {
     const geolocateRef = useRef<mapboxgl.GeolocateControl | null>(null);
     const mapRef = useRef<mapboxgl.Map | null>(null);
     const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]);
@@ -43,7 +43,7 @@ export default function SimpleMap({ updateMarkers }: any ): any {
     };
     useEffect(() => {
         const db = getDatabase();
-        const markersRef = ref(db, 'pins');
+        const markersRef = ref(db, `users/${userId}/pins`);
         onValue(markersRef, (snapshot) => {
             const markersData = snapshot.val();
             if (markersData) {
