@@ -1,0 +1,23 @@
+{
+  "name": "pinit",
+  "description": "map app",
+  "main": "page.tsx",
+  "authors": [
+    "Aseem Ratha <aseemratha@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "idk"
+  ],
+  "homepage": "https://github.com/aaratha/map-app",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "firebaseui": "^6.1.0"
+  }
+}

@@ -3,16 +3,16 @@
 import Image from 'next/image'
 import SimpleMap from './components/map'
 
-import { useState } from 'react';
-import { initializeApp } from "firebase/app";
+import { useState, useEffect } from 'react';
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, GoogleAuthProvider, AuthUI } from 'firebase/auth';
-import firebase from '@firebase/app';
-import firebaseui from 'firebaseui';
-require('firebase/auth')
+import { getAuth, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth';
+import firebase from 'firebase/compat/app';
+import * as firebaseui from 'firebaseui'
+import 'firebaseui/dist/firebaseui.css'
+import { StyledFirebaseAuth } from 'react-firebaseui';
+require('firebase/auth');
 
 const provider = new GoogleAuthProvider();
-var ui = new AuthUI(firebase.auth());
 
 const firebaseConfig = {
   apiKey: "AIzaSyAJ13n_qfW5v4ws-keFWrrSdUrmBIHiE3E",
@@ -25,48 +25,51 @@ const firebaseConfig = {
   measurementId: "G-9XEVK3TKWK"
 };
 
-const app = initializeApp(firebaseConfig);
+const app = firebase.initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
 
-export function SignIn():any {
-  ui.start('#firebaseui-auth-container', {
+export default function Home() {
+  const uiConfig = {
+    // Popup signin flow rather than redirect flow.
+    signInFlow: 'popup',
+    // We will display Google and Facebook as auth providers.
     signInOptions: [
-      // List of OAuth providers supported.
-      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-      firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-      firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-      firebase.auth.GithubAuthProvider.PROVIDER_ID
+      GoogleAuthProvider.PROVIDER_ID,
+      FacebookAuthProvider.PROVIDER_ID
     ],
     callbacks: {
-      signInSuccessWithAuthResult: function(authResult: any, redirectUrl: any) {
-        // User successfully signed in.
-        // Return type determines whether we continue the redirect automatically
-        // or whether we leave that to developer to handle.
-        return true;
-      },
+      // Avoid redirects after sign-in.
+      signInSuccessWithAuthResult: () => false,
     },
-    // Other config options...
-  });
+  };
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  useEffect(() => {
+    const unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
+      setIsSignedIn(!!user);
+    });
+    return () => unregisterAuthObserver(); // Make sure we un-register Firebase observers when the component unmounts.
+  }, []);
 
-  return (
-      <div>
-          <div id="firebaseui-auth-container"></div>
-          <div id="loader">Loading...</div>
-      </div>
-  )
-}
-
-export default function Home() {
-  
-  const [user] = useState(() => auth.currentUser);
-
+  if (!isSignedIn) {
+    const auth = getAuth(app);
+    return (
+      <main className="flex text-black min-h-screen flex-col items-center bg-gradient-to-b from-gray-200 to-gray-300">
+        <div>
+          <p>Please sign-in:</p>
+          <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth} />
+        </div>
+      </main>
+    );
+  }
   return (
     <main className="flex text-black min-h-screen flex-col items-center bg-gradient-to-b from-gray-200 to-gray-300">
+      <p>Welcome {firebase.auth().currentUser?.displayName ?? 'User'}! You are now signed-in!</p>
       <div>
         <h1 className='text-4xl mt-10 mb-10'>Pin It!</h1>
       </div>
-      {user ? <SimpleMap /> : <SignIn />}
+      <SimpleMap />
+      <a onClick={() => firebase.auth()?.signOut()}>Sign-out</a>
     </main>
-  )
+  );
 }

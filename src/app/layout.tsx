@@ -18,6 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Head>
+        {/*eslint-disable-next-line @next/next/no-sync-scripts*/}
+        <script src="bower_components/firebaseui/dist/firebaseui.js"></script>
+        {/*eslint-disable-next-line @next/next/no-css-tags*/}
+        <link type="text/css" rel="stylesheet" href="bower_components/firebaseui/dist/firebaseui.css" />
         <link href='https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css' rel='stylesheet' />
       </Head>
       <body className={inter.className}>{children}</body>
