@@ -52,6 +52,7 @@ export default function SimpleMap({ updateMarkers }: any ): any {
                     const marker = new mapboxgl.Marker()
                         .setLngLat([lng, lat]);
                     marker.addTo(mapRef.current!);
+                    console.log('ATTENCION PICK POCKET!')
                     return marker;
                 });
                 setMarkers(oldMarkers);

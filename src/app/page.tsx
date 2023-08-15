@@ -32,7 +32,6 @@ async function checkUserExists(userId: string): Promise<boolean> {
   return snapshot.exists();
 }
 
-
 async function updatePins(userId: string, lngLat: any[]) {
   const db = getDatabase();
   const userRef = ref(db, `users/${userId}`);
@@ -88,6 +87,8 @@ export default function Home() {
     return () => unregisterAuthObserver(); // Make sure we un-register Firebase observers when the component unmounts.
   }, []);
 
+  
+
   useEffect(() => {
     const checkUserAndWriteData = async () => {
       const userExists = await checkUserExists(firebase.auth().currentUser?.uid ?? '');
@@ -122,6 +123,8 @@ export default function Home() {
       </main>
     );
   }
+  const auth = getAuth(app);
+  const userId = firebase.auth().currentUser?.uid
   return (
     <main className="flex text-black min-h-screen flex-col items-center bg-gradient-to-b from-gray-200 to-gray-300">
       {/*  need to add an option for if the user exists vs if the user must be added for the first time. If its the first time, use writeUserData.  */}
@@ -130,7 +133,7 @@ export default function Home() {
       <div>
         <h1 className='text-4xl mt-10 mb-10'>Pin It!</h1>
       </div>
-      <SimpleMap updateMarkers={updateMarkers} />
+      <SimpleMap updateMarkers={updateMarkers} userId={userId} />
       <a onClick={() => firebase.auth()?.signOut()}>Sign-out</a>
     </main>
   );
