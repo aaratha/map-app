@@ -4,8 +4,9 @@ import React, { Fragment } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { createPortal } from 'react-dom';
+import { get, getDatabase, onValue, ref, set, update } from "firebase/database";
 
-export default function SimpleMap():any {
+export default function SimpleMap({ updateMarkers }: any ): any {
     const geolocateRef = useRef<mapboxgl.GeolocateControl | null>(null);
     const mapRef = useRef<mapboxgl.Map | null>(null);
     const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]);
@@ -41,22 +42,42 @@ export default function SimpleMap():any {
         geolocateRef.current?.trigger();
     };
     useEffect(() => {
-        mapRef.current?.on('click', (e: mapboxgl.MapMouseEvent) => {
+        const db = getDatabase();
+        const markersRef = ref(db, 'pins');
+        onValue(markersRef, (snapshot) => {
+            const markersData = snapshot.val();
+            if (markersData) {
+                const oldMarkers = Object.values(markersData).map((markerData: any) => {
+                    const { lng, lat } = markerData;
+                    const marker = new mapboxgl.Marker()
+                        .setLngLat([lng, lat]);
+                    marker.addTo(mapRef.current!);
+                    return marker;
+                });
+                setMarkers(oldMarkers);
+            }
+        });
+        const handleClick = (e: mapboxgl.MapMouseEvent) => {
             console.log(e.lngLat);
             const marker = new mapboxgl.Marker()
                 .setLngLat(e.lngLat)
                 .addTo(mapRef.current!);
-            // setMarkers([...markers, marker]);
             setMarkers(prevMarkers => {
                 const newMarkers = [...prevMarkers, marker];
-                console.log(newMarkers);
+                updateMarkers(newMarkers);
                 return newMarkers;
             });
-        });
-    }, [markers]);  
+        };
+        mapRef.current?.off('click', handleClick);
+        mapRef.current?.on('click', handleClick);
+        return () => {
+            mapRef.current?.off('click', handleClick);
+        };
+    }, [markers, updateMarkers]); 
 
     return (
         <div>
+            <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
             <div className=' rounded-3xl overflow-hidden border border-black w-[92vw] md:w-[92vh] h-[72vh] flex justify-center z-10'>
                 <div id="map" className='rounded-3xl overflow-hidden border border-black w-[90vw]  md:w-[90vh] h-[70vh] m-auto'>
                 </div>

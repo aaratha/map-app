@@ -1,24 +1,5 @@
 {
   "database": {
     "rules": "database.rules.json"
-  },
-  "users": {
-    "aaratha": {
-      "name": "Aseem Ratha",
-      "email": "aseemratha@gmail.com",
-      "contacts": {
-        "ihammond": true
-      },
-      "pins": {
-        
-      }
-    },
-    "ihammond": {
-      "name": "Ilan Hammond",
-      "email": "coolwizard1@gmail.com",
-      "contacts": {
-        "aaratha": true
-      }
-    }
   }
 }
