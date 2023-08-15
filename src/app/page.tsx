@@ -4,15 +4,24 @@ import Image from 'next/image'
 import SimpleMap from './components/map'
 
 import { useState, useEffect } from 'react';
-import { getAnalytics } from "firebase/analytics";
+// import { getAnalytics } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth';
 import firebase from 'firebase/compat/app';
 import * as firebaseui from 'firebaseui'
 import 'firebaseui/dist/firebaseui.css'
 import { StyledFirebaseAuth } from 'react-firebaseui';
 require('firebase/auth');
+import { getDatabase, ref, set } from "firebase/database";
 
 const provider = new GoogleAuthProvider();
+
+function writeUserData(userId: string, name: string, email: string) {
+  const db = getDatabase();
+  set(ref(db, 'users/' + userId), {
+    name: name,
+    email: email,
+  });
+}
 
 const firebaseConfig = {
   apiKey: "AIzaSyAJ13n_qfW5v4ws-keFWrrSdUrmBIHiE3E",
@@ -26,8 +35,9 @@ const firebaseConfig = {
 };
 
 const app = firebase.initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// const analytics = getAnalytics(app);
 
+const database = getDatabase(app);
 
 export default function Home() {
   const uiConfig = {
@@ -64,6 +74,7 @@ export default function Home() {
   }
   return (
     <main className="flex text-black min-h-screen flex-col items-center bg-gradient-to-b from-gray-200 to-gray-300">
+      {/*  need to add an option for if the user exists vs if the user must be added for the first time. If its the first time, use writeUserData.  */}
       <p>Welcome {firebase.auth().currentUser?.displayName ?? 'User'}! You are now signed-in!</p>
       <div>
         <h1 className='text-4xl mt-10 mb-10'>Pin It!</h1>
