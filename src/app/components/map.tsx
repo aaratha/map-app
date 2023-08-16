@@ -4,7 +4,7 @@ import React, { Fragment } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { createPortal } from 'react-dom';
-import { get, getDatabase, onValue, ref, set, update } from "firebase/database";
+import { get, getDatabase, onValue, ref, set, update, child } from "firebase/database";
 
 /**
  * A simple map component that displays a map using Mapbox GL and allows the user to add and view markers.
@@ -17,6 +17,10 @@ export default function SimpleMap({ updateMarkers, userId, photo }: any ): any {
     const mapRef = useRef<mapboxgl.Map | null>(null);
     const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]);
 
+    const handleMarkerClick = (markerData: any) => {
+        // Do something when the marker is clicked.
+        console.log('Marker clicked:', markerData);
+    };
     // Initialize the map and geolocation control when the component mounts.
     useEffect(() => {
         mapboxgl.accessToken = 'pk.eyJ1IjoiYWFyYXRoYSIsImEiOiJjbGxiOG9xdDMwNG56M2txbWNhbzl1Nm1iIn0.t7OS87HS14To9irKMOAh6A';
@@ -41,12 +45,55 @@ export default function SimpleMap({ updateMarkers, userId, photo }: any ): any {
             geolocateRef.current?.trigger();
         });
         mapRef.current = map;
+        async function handlePins(userId: string) {
+            const db = getDatabase();
+            const userRef = ref(db, `users/${userId}`);
+            const snapshot = await get(userRef);
+            const userPins = snapshot.val()?.pins || [];
+            const allPins = [...userPins];
+            const friendsSnapshot = await get(child(userRef, 'friends'));
+            if (friendsSnapshot.exists()) {
+                const friendsData = friendsSnapshot.val();
+                console.log('friendsData: ', friendsData)
+                if (Array.isArray(friendsData)) {
+                    for (const friendSnapshot of friendsData) {
+                    const friendUserId = friendSnapshot.key;
+                    const friendUserRef = ref(db, `users/${friendUserId}`);
+                    const friendUserSnapshot = await get(friendUserRef);
+                    const friendPins = friendUserSnapshot.val()?.pins || [];
+                    allPins.push(...friendPins);
+                    }
+                } else {
+                    const friendUserId = Object.keys(friendsData)[0];
+                    console.log('friendUserId: ', friendUserId)
+                    const friendUserRef = ref(db, `users/${friendUserId}`);
+                    const friendUserSnapshot = await get(friendUserRef);
+                    const friendPins = friendUserSnapshot.val()?.pins || [];
+                    allPins.push(...friendPins);
+                }
+            }
+            return allPins;
+        }
 
-        markers.forEach(marker => {
-            marker.getElement().innerHTML = `<img src=${photo} style="border-radius: 50%" width="32" height="32" />`;
-            marker.addTo(map); 
-        });
-    }, [markers, photo]);
+        async function addMarkers() {
+            const db = getDatabase();
+            const userRef = ref(db, `users`);
+            const pins = await handlePins(userId);
+            pins.forEach(async (pin: any) => {
+                const marker = new mapboxgl.Marker().setLngLat(pin.lngLat);
+                marker.getElement().addEventListener('click', () => {
+                    handleMarkerClick(marker);
+                });
+                const pinCreator = pin.creator;
+                const snapshot = await get(child(userRef, `${pinCreator}`))
+                const creatorPhoto = snapshot.val()?.photo || '';
+                console.log('creatorPhoto: ', creatorPhoto)
+                marker.getElement().innerHTML = `<img src=${creatorPhoto} style="border-radius: 50%" width="32" height="32" />`;
+                marker.addTo(mapRef.current!);
+            });
+        }
+        addMarkers();
+    }, [markers, photo, userId]);
 
     // Trigger geolocation when the "Find" button is clicked.
     const handleClick = () => {
@@ -68,38 +115,31 @@ export default function SimpleMap({ updateMarkers, userId, photo }: any ): any {
                 });
                 setMarkers(oldMarkers);
             }
-            return () => unsubscribe();
         });
+        return unsubscribe;
     }, [userId]);
 
     // Add a new marker when the map is clicked.
     useEffect(() => {
         const handleClick = (e: mapboxgl.MapMouseEvent) => {
+            console.log('Click event:', e);
             console.log(e.lngLat);
-            const marker = new mapboxgl.Marker()
+            const newMarker = new mapboxgl.Marker()
                 .setLngLat(e.lngLat)
-                .addTo(mapRef.current!);
-            setMarkers(prevMarkers => {
-                const newMarkers = [...prevMarkers, marker];
-                updateMarkers(newMarkers);
-                return newMarkers;
-            });
+            updateMarkers(newMarker);
         };
         mapRef.current?.off('click', handleClick);
         mapRef.current?.on('click', handleClick);
         return () => {
             mapRef.current?.off('click', handleClick);
         };
-    }, [markers, updateMarkers, userId]); 
+    }, [markers, updateMarkers, userId]);
 
     // Render the map and "Find" button.
     return (
         <div>
             <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
-            <div className=' rounded-3xl overflow-hidden border border-black p-2 flex justify-center z-10'>
-                <div id="map" className='rounded-3xl overflow-hidden border-4 border-black w-[90vw]  md:w-[90vh] h-[70vh] m-auto'>
-                </div>
-            </div>
+            <div id="map" className='rounded-3xl overflow-hidden border-4 border-black w-[90vw]  md:w-[90vh] h-[70vh] m-auto'></div>
             <button onClick={handleClick} className='border border-black border-opacity-25 p-4 pt-2 pb-2 rounded-full hover:bg-white text-black transition-all absolute -translate-y-20 translate-x-10 bg-gray-500 bg-opacity-75 z-20'>Find</button>
         </div>
     );
