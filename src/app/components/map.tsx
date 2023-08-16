@@ -12,7 +12,7 @@ import { get, getDatabase, onValue, ref, set, update } from "firebase/database";
  * @param userId The ID of the user whose markers are being displayed.
  * @returns The SimpleMap component.
  */
-export default function SimpleMap({ updateMarkers, userId }: any ): any {
+export default function SimpleMap({ updateMarkers, userId, photo }: any ): any {
     const geolocateRef = useRef<mapboxgl.GeolocateControl | null>(null);
     const mapRef = useRef<mapboxgl.Map | null>(null);
     const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]);
@@ -42,8 +42,11 @@ export default function SimpleMap({ updateMarkers, userId }: any ): any {
         });
         mapRef.current = map;
 
-        markers.forEach(marker => { marker.addTo(map); });
-    }, [markers]);
+        markers.forEach(marker => {
+            marker.getElement().innerHTML = `<img src=${photo} style="border-radius: 50%" width="32" height="32" />`;
+            marker.addTo(map); 
+        });
+    }, [markers, photo]);
 
     // Trigger geolocation when the "Find" button is clicked.
     const handleClick = () => {
@@ -93,11 +96,11 @@ export default function SimpleMap({ updateMarkers, userId }: any ): any {
     return (
         <div>
             <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
-            <div className=' rounded-3xl overflow-hidden border border-black w-[92vw] md:w-[92vh] h-[72vh] flex justify-center z-10'>
-                <div id="map" className='rounded-3xl overflow-hidden border border-black w-[90vw]  md:w-[90vh] h-[70vh] m-auto'>
+            <div className=' rounded-3xl overflow-hidden border border-black p-2 flex justify-center z-10'>
+                <div id="map" className='rounded-3xl overflow-hidden border-4 border-black w-[90vw]  md:w-[90vh] h-[70vh] m-auto'>
                 </div>
             </div>
-            <button onClick={handleClick} className='border border-black border-opacity-25 p-4 pt-2 pb-2 rounded-full hover:bg-white text-black transition-all absolute -translate-y-20 translate-x-10 bg-gray-500 bg-opacity-25 z-20'>Find</button>
+            <button onClick={handleClick} className='border border-black border-opacity-25 p-4 pt-2 pb-2 rounded-full hover:bg-white text-black transition-all absolute -translate-y-20 translate-x-10 bg-gray-500 bg-opacity-75 z-20'>Find</button>
         </div>
     );
 }

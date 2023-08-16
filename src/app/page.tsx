@@ -125,15 +125,17 @@ export default function Home() {
   }
   const auth = getAuth(app);
   const userId = firebase.auth().currentUser?.uid
+  const photo = firebase.auth().currentUser?.photoURL
   return (
-    <main className="flex text-black min-h-screen flex-col items-center bg-gradient-to-b from-gray-200 to-gray-300">
-      <p>Welcome {firebase.auth().currentUser?.displayName ?? 'User'}! You are now signed-in!</p>
-      <p>user: {firebase.auth().currentUser?.uid}</p>
+    <main className="flex text-black min-h-screen flex-col items-center bg-white">
+      <div className='flex flex-row p-5 pb-0 mb-0 w-full'>
+        <p>Welcome {firebase.auth().currentUser?.displayName ?? 'User'}! You are now signed-in!</p>
+      </div>
       <div>
         <h1 className='text-4xl mt-10 mb-10'>Pin It!</h1>
       </div>
-      <SimpleMap updateMarkers={updateMarkers} userId={userId} />
-      <a onClick={() => firebase.auth()?.signOut()}>Sign-out</a>
+      <SimpleMap updateMarkers={updateMarkers} userId={userId} photo={photo} />
+      <a className='border border-black border-opacity-25 p-2 mt-4 hover:bg-black hover:text-white rounded-full transition-all' onClick={() => firebase.auth()?.signOut()}><button>Sign-out</button></a>
     </main>
   );
 }
