@@ -127,7 +127,6 @@ export default function Home() {
   const userId = firebase.auth().currentUser?.uid
   return (
     <main className="flex text-black min-h-screen flex-col items-center bg-gradient-to-b from-gray-200 to-gray-300">
-      {/*  need to add an option for if the user exists vs if the user must be added for the first time. If its the first time, use writeUserData.  */}
       <p>Welcome {firebase.auth().currentUser?.displayName ?? 'User'}! You are now signed-in!</p>
       <p>user: {firebase.auth().currentUser?.uid}</p>
       <div>

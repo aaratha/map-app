@@ -6,11 +6,18 @@ import mapboxgl from 'mapbox-gl';
 import { createPortal } from 'react-dom';
 import { get, getDatabase, onValue, ref, set, update } from "firebase/database";
 
+/**
+ * A simple map component that displays a map using Mapbox GL and allows the user to add and view markers.
+ * @param updateMarkers A function that updates the markers on the map.
+ * @param userId The ID of the user whose markers are being displayed.
+ * @returns The SimpleMap component.
+ */
 export default function SimpleMap({ updateMarkers, userId }: any ): any {
     const geolocateRef = useRef<mapboxgl.GeolocateControl | null>(null);
     const mapRef = useRef<mapboxgl.Map | null>(null);
     const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]);
 
+    // Initialize the map and geolocation control when the component mounts.
     useEffect(() => {
         mapboxgl.accessToken = 'pk.eyJ1IjoiYWFyYXRoYSIsImEiOiJjbGxiOG9xdDMwNG56M2txbWNhbzl1Nm1iIn0.t7OS87HS14To9irKMOAh6A';
         
@@ -38,26 +45,32 @@ export default function SimpleMap({ updateMarkers, userId }: any ): any {
         markers.forEach(marker => { marker.addTo(map); });
     }, [markers]);
 
+    // Trigger geolocation when the "Find" button is clicked.
     const handleClick = () => {
         geolocateRef.current?.trigger();
     };
+
+    // Load markers from Firebase when the component mounts.
     useEffect(() => {
         const db = getDatabase();
         const markersRef = ref(db, `users/${userId}/pins`);
-        onValue(markersRef, (snapshot) => {
+        const unsubscribe = onValue(markersRef, (snapshot) => {
             const markersData = snapshot.val();
             if (markersData) {
                 const oldMarkers = Object.values(markersData).map((markerData: any) => {
-                    const { lng, lat } = markerData;
+                    const { lng, lat } = markerData.lngLat;
                     const marker = new mapboxgl.Marker()
                         .setLngLat([lng, lat]);
-                    marker.addTo(mapRef.current!);
-                    console.log('ATTENCION PICK POCKET!')
                     return marker;
                 });
                 setMarkers(oldMarkers);
             }
+            return () => unsubscribe();
         });
+    }, [userId]);
+
+    // Add a new marker when the map is clicked.
+    useEffect(() => {
         const handleClick = (e: mapboxgl.MapMouseEvent) => {
             console.log(e.lngLat);
             const marker = new mapboxgl.Marker()
@@ -74,8 +87,9 @@ export default function SimpleMap({ updateMarkers, userId }: any ): any {
         return () => {
             mapRef.current?.off('click', handleClick);
         };
-    }, [markers, updateMarkers]); 
+    }, [markers, updateMarkers, userId]); 
 
+    // Render the map and "Find" button.
     return (
         <div>
             <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
@@ -87,5 +101,3 @@ export default function SimpleMap({ updateMarkers, userId }: any ): any {
         </div>
     );
 }
-
-
