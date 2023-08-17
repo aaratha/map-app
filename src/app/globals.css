@@ -25,3 +25,22 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.menu {
+  width: 0px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.menu-open {
+  width: 300px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.inner-shadow {
+  box-shadow: none;
+}
+
+.inner-shadow:hover {
+  box-shadow: inset 0px 10px 10px 10px rgba(0 0 0 0.5);
+}
+

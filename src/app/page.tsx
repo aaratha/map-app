@@ -2,6 +2,8 @@
 
 import Image from 'next/image'
 import SimpleMap from './components/map'
+import Header from './components/header'
+import Menu from './components/menu'
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -113,6 +115,12 @@ export default function Home() {
     }
   };
 
+  const [menuToggle, setMenuToggle] = useState(false);
+  function handleMenuClick() {
+    setMenuToggle(!menuToggle);
+    console.log(menuToggle)
+  }
+
   useEffect(() => {
     console.log(markers);
   }, [markers]);
@@ -129,19 +137,18 @@ export default function Home() {
     );
   }
   const auth = getAuth(app);
+  const userName = firebase.auth().currentUser?.displayName
   const userId = firebase.auth().currentUser?.uid
   const photo = firebase.auth().currentUser?.photoURL
   checkUserAndWriteData();
   return (
-    <main className="flex text-black min-h-screen flex-col items-center bg-white">
-      <div className='flex flex-row p-5 pb-0 mb-0 w-full'>
-        <p>Welcome {firebase.auth().currentUser?.displayName ?? 'User'}! You are now signed-in!</p>
+<main className="flex text-black min-h-screen flex-col items-center bg-white transition-all ">
+      <div className={` absolute origin-left menu ${menuToggle ? 'menu-open' : ''} z-20 left-0  h-full shadow-lg`}>
+        <Menu menuToggle={menuToggle} handleMenuClick={handleMenuClick} />
       </div>
-      <div>
-        <h1 className='text-4xl mt-5 mb-5 border border-black border-opacity-25 p-1 rounded-lg'>Pin It!</h1>
-      </div>
+      <Header userName={userName ?? ''} photo={photo ?? ''} handleMenuClick={handleMenuClick} />
       <SimpleMap updateMarkers={updateMarkers} userId={userId} photo={photo} />
-      <a className='border border-black border-opacity-25 p-2 mt-4 hover:bg-black hover:text-white rounded-full transition-all' onClick={() => firebase.auth()?.signOut()}><button>Sign-out</button></a>
+      <a className='border border-black border-opacity-25 p-2 mt-4  hover:border-opacity-100 rounded-lg transition-all hover:scale-105 hover:shadow-md' onClick={() => firebase.auth()?.signOut()}><button>Sign-out</button></a>
     </main>
   );
 }

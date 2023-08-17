@@ -137,10 +137,10 @@ export default function SimpleMap({ updateMarkers, userId, photo }: any ): any {
 
     // Render the map and "Find" button.
     return (
-        <div>
+        <div className=''>
             <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
-            <div id="map" className='rounded-3xl overflow-hidden border-4 border-black w-[90vw]  md:w-[90vh] h-[70vh] m-auto'></div>
-            <button onClick={handleClick} className='border border-black border-opacity-25 p-4 pt-2 pb-2 rounded-full hover:bg-white text-black transition-all absolute -translate-y-20 translate-x-10 bg-gray-500 bg-opacity-75 z-20'>Find</button>
+            <div id="map" className='overflow-hidden w-screen md:w-[90vh] h-[84vh] m-auto'></div>
+            <button onClick={handleClick} className='border border-black border-opacity-25 p-4 pt-2 pb-2 rounded-lg hover:bg-white hover:scale-105 hover:border-opacity-100 text-black transition-all absolute -translate-y-20 translate-x-5 z-10'>Find</button>
         </div>
     );
 }
