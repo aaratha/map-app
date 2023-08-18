@@ -12,19 +12,14 @@ import { get, getDatabase, onValue, ref, set, update, child } from "firebase/dat
  * @param userId The ID of the user whose markers are being displayed.
  * @returns The SimpleMap component.
  */
-export default function SimpleMap({ updateMarkers, userId, photo }: any ): any {
+export default function SimpleMap({ updateMarkers, userId, photo, handlePinClick }: any ): any {
     const geolocateRef = useRef<mapboxgl.GeolocateControl | null>(null);
     const mapRef = useRef<mapboxgl.Map | null>(null);
     const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]);
 
     const handleMarkerClick = (markerData: any) => {
-        // Do something when the marker is clicked.
-        // if (e && e.originalEvent) {
-        //     e.originalEvent.stopPropagation();
-        // } else if (e) {
-        //     console.log('e: ', e)v
-        // }
         console.log('Marker clicked:', markerData);
+        handlePinClick(markerData)
     };
     // Initialize the map and geolocation control when the component mounts.
     useEffect(() => {
@@ -79,29 +74,35 @@ export default function SimpleMap({ updateMarkers, userId, photo }: any ): any {
             }
             return allPins;
         }
-
+        
         async function addMarkers() {
             const db = getDatabase();
             const userRef = ref(db, `users`);
             const pins = await handlePins(userId);
             pins.forEach(async (pin: any) => {
-                const marker = new mapboxgl.Marker().setLngLat(pin.lngLat);
+                const el = document.createElement('div');
+                el.id = 'marker';
+                el.style.position = 'absolute';
+                
+                const marker = new mapboxgl.Marker({ element: el, anchor: 'center' }).setLngLat(pin.lngLat);
                 marker.getElement().addEventListener('click', () => {
                     handleMarkerClick(marker);
+                    markerClicked = true;
                 });
                 const pinCreator = pin.creator;
                 const snapshot = await get(child(userRef, `${pinCreator}`))
                 const creatorPhoto = snapshot.val()?.photo || '';
                 console.log('creatorPhoto: ', creatorPhoto)
-                marker.getElement().innerHTML = `<img src=${creatorPhoto} style="border-radius: 50%" width="32" height="32" />`;
+                marker.getElement().innerHTML = `<img src=${creatorPhoto} style="border-radius: 50%; cursor: pointer" width="40" height="40" />`;
                 marker.addTo(mapRef.current!);
             });
         }
         addMarkers();
     }, [markers, photo, userId]);
+    let markerClicked = false;
 
     // Trigger geolocation when the "Find" button is clicked.
-    const handleClick = () => {
+    const handleFindClick = () => {
         geolocateRef.current?.trigger();
     };
 
@@ -126,7 +127,11 @@ export default function SimpleMap({ updateMarkers, userId, photo }: any ): any {
 
     // Add a new marker when the map is clicked.
     useEffect(() => {
-        const handleClick = (e: mapboxgl.MapMouseEvent) => {
+        const handleClick = (e: mapboxgl.MapMouseEvent & { features?: mapboxgl.MapboxGeoJSONFeature[] }) => {
+            if (markerClicked) {
+                markerClicked = false;
+                return;
+            }
             console.log('Click event:', e);
             console.log(e.lngLat);
             const newMarker = new mapboxgl.Marker()
@@ -145,7 +150,7 @@ export default function SimpleMap({ updateMarkers, userId, photo }: any ): any {
         <div className=' h-[93vh]'>
             <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
             <div id="map" className='overflow-hidden w-screen h-full m-auto'></div>
-            <button onClick={handleClick} className='border shadow-md border-black border-opacity-25 p-4 pt-2 pb-2 rounded-lg hover:bg-white hover:scale-105 hover:border-opacity-100 text-black transition-all absolute -translate-y-20 translate-x-5 z-10'>Find</button>
+            <button onClick={handleFindClick} className='border shadow-md border-black border-opacity-25 p-4 pt-2 pb-2 rounded-lg hover:bg-white hover:scale-105 hover:border-opacity-100 text-black transition-all absolute -translate-y-20 translate-x-5 z-10'>Find</button>
         </div>
     );
 }

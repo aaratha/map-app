@@ -5,6 +5,7 @@ import SimpleMap from './components/map'
 import Header from './components/header'
 import Menu from './components/menu'
 import AccountMenu from './components/accountMenu'
+import PinMenu from './components/pinMenu'
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -104,6 +105,8 @@ export default function Home() {
   }, []);
 
   const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]);
+  const [exportData, setExportData] = useState<{ id: string, title: string, description: string, latitude: number, longitude: number } | null>(null); 
+  const [pinMenuToggle, setPinMenuToggle] = useState(false);
 
   const updateMarkers = (newMarker: mapboxgl.Marker) => {
     const markerExists = markers.some((marker) => {
@@ -147,6 +150,17 @@ export default function Home() {
   const userName = firebase.auth().currentUser?.displayName
   const userId = firebase.auth().currentUser?.uid
   const photo = firebase.auth().currentUser?.photoURL
+  const handlePinClick = (pinData: any) => {
+    // setExportData({
+    //   id: pinData.id,
+    //   title: pinData.title,
+    //   description: pinData.description,
+    //   latitude: pinData._lngLat.lat,
+    //   longitude: pinData._lngLat.lng
+    // });
+    setPinMenuToggle(true);
+    console.log(pinData._lngLat);
+  }
   checkUserAndWriteData();
   return (
     <main className="flex text-black flex-col items-center bg-white transition-all">
@@ -154,7 +168,8 @@ export default function Home() {
         <Menu menuToggle={menuToggle} handleMenuClick={handleMenuClick} />
       </div>
       <Header userName={userName ?? ''} photo={photo ?? ''} handleMenuClick={handleMenuClick} toggleDropdown={toggleDropdown} dropdownToggle={dropdownToggle}/>
-      <SimpleMap updateMarkers={updateMarkers} userId={userId} photo={photo} />
+      <SimpleMap updateMarkers={updateMarkers} userId={userId} photo={photo} handlePinClick={handlePinClick} />
+      {pinMenuToggle && <PinMenu pinData={exportData} />}
       <div className={`absolute right-0 top-14 z-10`}>
         <AccountMenu toggleDropdown={toggleDropdown} dropdownToggle={dropdownToggle} handleSignOut={handleSignOut} />
       </div>
