@@ -19,11 +19,11 @@ export default function SimpleMap({ updateMarkers, userId, photo }: any ): any {
 
     const handleMarkerClick = (markerData: any, e: mapboxgl.MapMouseEvent) => {
         // Do something when the marker is clicked.
-        if (e && e.originalEvent) {
-            e.originalEvent.stopPropagation();
-        } else if (e) {
-            console.log('e: ', e)
-        }
+        // if (e && e.originalEvent) {
+        //     e.originalEvent.stopPropagation();
+        // } else if (e) {
+        //     console.log('e: ', e)v
+        // }
         console.log('Marker clicked:', markerData);
     };
     // Initialize the map and geolocation control when the component mounts.
@@ -86,8 +86,8 @@ export default function SimpleMap({ updateMarkers, userId, photo }: any ): any {
             const pins = await handlePins(userId);
             pins.forEach(async (pin: any) => {
                 const marker = new mapboxgl.Marker().setLngLat(pin.lngLat);
-                marker.getElement().addEventListener('click', () => {
-                    handleMarkerClick(marker);
+                marker.getElement().addEventListener('click', (e: mapboxgl.MapMouseEvent) => {
+                    handleMarkerClick(pin, e);
                 });
                 const pinCreator = pin.creator;
                 const snapshot = await get(child(userRef, `${pinCreator}`))
