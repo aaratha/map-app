@@ -17,8 +17,13 @@ export default function SimpleMap({ updateMarkers, userId, photo }: any ): any {
     const mapRef = useRef<mapboxgl.Map | null>(null);
     const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]);
 
-    const handleMarkerClick = (markerData: any) => {
+    const handleMarkerClick = (markerData: any, e: mapboxgl.MapMouseEvent) => {
         // Do something when the marker is clicked.
+        if (e && e.originalEvent) {
+            e.originalEvent.stopPropagation();
+        } else if (e) {
+            console.log('e: ', e)
+        }
         console.log('Marker clicked:', markerData);
     };
     // Initialize the map and geolocation control when the component mounts.
@@ -137,10 +142,10 @@ export default function SimpleMap({ updateMarkers, userId, photo }: any ): any {
 
     // Render the map and "Find" button.
     return (
-        <div className=''>
+        <div className=' h-[93vh]'>
             <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
-            <div id="map" className='overflow-hidden w-screen md:w-[90vh] h-[84vh] m-auto'></div>
-            <button onClick={handleClick} className='border border-black border-opacity-25 p-4 pt-2 pb-2 rounded-lg hover:bg-white hover:scale-105 hover:border-opacity-100 text-black transition-all absolute -translate-y-20 translate-x-5 z-10'>Find</button>
+            <div id="map" className='overflow-hidden w-screen h-full m-auto'></div>
+            <button onClick={handleClick} className='border shadow-md border-black border-opacity-25 p-4 pt-2 pb-2 rounded-lg hover:bg-white hover:scale-105 hover:border-opacity-100 text-black transition-all absolute -translate-y-20 translate-x-5 z-10'>Find</button>
         </div>
     );
 }

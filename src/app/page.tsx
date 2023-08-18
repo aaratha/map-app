@@ -4,6 +4,7 @@ import Image from 'next/image'
 import SimpleMap from './components/map'
 import Header from './components/header'
 import Menu from './components/menu'
+import AccountMenu from './components/accountMenu'
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -120,7 +121,13 @@ export default function Home() {
     setMenuToggle(!menuToggle);
     console.log(menuToggle)
   }
-
+  const [dropdownToggle, setDropdownToggle] = useState(false);
+    function toggleDropdown() {
+      setDropdownToggle(!dropdownToggle);
+  }
+  function handleSignOut() {
+    firebase.auth()?.signOut()
+  }
   useEffect(() => {
     console.log(markers);
   }, [markers]);
@@ -142,13 +149,15 @@ export default function Home() {
   const photo = firebase.auth().currentUser?.photoURL
   checkUserAndWriteData();
   return (
-<main className="flex text-black min-h-screen flex-col items-center bg-white transition-all ">
-      <div className={` absolute origin-left menu ${menuToggle ? 'menu-open' : ''} z-20 left-0  h-full shadow-lg`}>
+    <main className="flex text-black flex-col items-center bg-white transition-all">
+      <div className={` absolute origin-left  z-30 left-0  h-full shadow-lg`}>
         <Menu menuToggle={menuToggle} handleMenuClick={handleMenuClick} />
       </div>
-      <Header userName={userName ?? ''} photo={photo ?? ''} handleMenuClick={handleMenuClick} />
+      <Header userName={userName ?? ''} photo={photo ?? ''} handleMenuClick={handleMenuClick} toggleDropdown={toggleDropdown} dropdownToggle={dropdownToggle}/>
       <SimpleMap updateMarkers={updateMarkers} userId={userId} photo={photo} />
-      <a className='border border-black border-opacity-25 p-2 mt-4  hover:border-opacity-100 rounded-lg transition-all hover:scale-105 hover:shadow-md' onClick={() => firebase.auth()?.signOut()}><button>Sign-out</button></a>
+      <div className={`absolute right-0 top-14 z-10`}>
+        <AccountMenu toggleDropdown={toggleDropdown} dropdownToggle={dropdownToggle} handleSignOut={handleSignOut} />
+      </div>
     </main>
   );
 }
