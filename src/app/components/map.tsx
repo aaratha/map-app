@@ -17,7 +17,7 @@ export default function SimpleMap({ updateMarkers, userId, photo }: any ): any {
     const mapRef = useRef<mapboxgl.Map | null>(null);
     const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]);
 
-    const handleMarkerClick = (markerData: any, e: mapboxgl.MapMouseEvent) => {
+    const handleMarkerClick = (markerData: any) => {
         // Do something when the marker is clicked.
         // if (e && e.originalEvent) {
         //     e.originalEvent.stopPropagation();
@@ -86,8 +86,8 @@ export default function SimpleMap({ updateMarkers, userId, photo }: any ): any {
             const pins = await handlePins(userId);
             pins.forEach(async (pin: any) => {
                 const marker = new mapboxgl.Marker().setLngLat(pin.lngLat);
-                marker.getElement().addEventListener('click', (e: mapboxgl.MapMouseEvent) => {
-                    handleMarkerClick(pin, e);
+                marker.getElement().addEventListener('click', () => {
+                    handleMarkerClick(marker);
                 });
                 const pinCreator = pin.creator;
                 const snapshot = await get(child(userRef, `${pinCreator}`))
