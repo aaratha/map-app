@@ -23,8 +23,9 @@ export default function AccountMenu({ toggleDropdown, dropdownToggle, handleSign
         };
     }, [menuRef, toggleDropdown, dropdownToggle]);
     return (
-        <div ref={menuRef} className={`flex flex-col bg-white dropdown overflow-hidden w-[12rem] rounded-b-lg shadow-md ${dropdownToggle ? 'dropdown-open' : ''}`}>
-            <button onClick={handleSignOut} className="border border-black border-opacity-25 hover:scale-105 hover:border-opacity-100 hover:shadow-md p-2 mt-auto m-4 rounded-lg">Sign Out</button>
+        <div ref={menuRef} className={`flex flex-col bg-white dropdown overflow-hidden w-[100vw] rounded-b-lg text-center shadow-md ${dropdownToggle ? 'dropdown-open' : ''}`}>
+            <a href="/profile" className=""><button className=" justify-center flex w-full border-t border-b border-black border-opacity-25 hover:border-opacity-100 p-3 mt-3 hover:shadow-md text-lg">Profile</button></a>
+            <button onClick={handleSignOut} className="transition-all border border-black border-opacity-25 hover:scale-105 hover:border-opacity-100 hover:shadow-md p-2 mt-auto m-4 rounded-lg">Sign Out</button>
         </div>
     )
 }

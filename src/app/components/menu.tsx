@@ -21,9 +21,10 @@ export default function Menu({menuToggle, handleMenuClick}: menuProps) {
     }, [menuRef, handleMenuClick, menuToggle]);
     return(
         <div ref={menuRef} className={`menu ${menuToggle ? 'menu-open' : ''} bg-white h-screen z-40 overflow-hidden`}>
-            <div className="h-full w-full p-4 flex flex-col">
-                <h1 className="text-2xl">Menu</h1>
-                <button onClick={handleMenuClick} className=" mt-auto border border-black border-opacity-25 p-2 text-lg hover:scale-105 hover:border-opacity-100 hover:shadow-md rounded-lg transition-all">Close</button>
+            <div className="h-full w-full flex flex-col">
+                <h1 className="text-2xl m-4">Menu</h1>
+                <button className='border-b border-t border-black border-opacity-25 p-2 hover:border-opacity-100 hover:shadow-md transition-all'>Pins</button>
+                <button onClick={handleMenuClick} className=" m-4 mt-auto border border-black border-opacity-25 p-2 text-lg hover:scale-105 hover:border-opacity-100 hover:shadow-md rounded-lg transition-all">Close</button>
             </div>
         </div>
     )

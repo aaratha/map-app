@@ -6,10 +6,13 @@ import Header from './components/header'
 import Menu from './components/menu'
 import AccountMenu from './components/accountMenu'
 import PinMenu from './components/pinMenu'
+import Profile from './profile/page'
 
 import { v4 as uuidv4 } from 'uuid';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link'
+
 // import { getAnalytics } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth';
 import firebase from 'firebase/compat/app';
@@ -164,6 +167,7 @@ export default function Home() {
   checkUserAndWriteData();
   return (
     <main className="flex text-black flex-col items-center bg-white transition-all">
+      <Link href={{ pathname: '/profile', query: { userId, photo } }}></Link>
       <div className={` absolute origin-left  z-30 left-0  h-full shadow-lg`}>
         <Menu menuToggle={menuToggle} handleMenuClick={handleMenuClick} />
       </div>
