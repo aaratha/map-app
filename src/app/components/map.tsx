@@ -150,7 +150,6 @@ export default function SimpleMap({ updateMarkers, userId, photo, handlePinClick
         <div className=' h-[93vh]'>
             <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
             <div id="map" className='overflow-hidden w-screen h-full m-auto'></div>
-            <button onClick={handleFindClick} className='border shadow-md border-black border-opacity-25 p-4 pt-2 pb-2 rounded-lg hover:bg-white hover:scale-105 hover:border-opacity-100 text-black transition-all absolute -translate-y-20 translate-x-5 z-10'>Find</button>
         </div>
     );
 }

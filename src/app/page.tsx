@@ -7,6 +7,8 @@ import Menu from './components/menu'
 import AccountMenu from './components/accountMenu'
 import PinMenu from './components/pinMenu'
 import Profile from './profile/page'
+import Footer from './components/footer'
+import PlusSign from './components/plusSign'
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -176,6 +178,8 @@ export default function Home() {
       <div className={`absolute right-0 top-14 z-10`}>
         <AccountMenu toggleDropdown={toggleDropdown} dropdownToggle={dropdownToggle} handleSignOut={handleSignOut} userId={userId} userName={userName ?? ''} photo={photo ?? ''} />
       </div>
+      <Footer />
+      <PlusSign />
     </main>
   );
 }
