@@ -167,7 +167,6 @@ export default function Home() {
   checkUserAndWriteData();
   return (
     <main className="flex text-black flex-col items-center bg-white transition-all">
-      <Link href={{ pathname: '/profile', query: { userId, photo } }}></Link>
       <div className={` absolute origin-left  z-30 left-0  h-full shadow-lg`}>
         <Menu menuToggle={menuToggle} handleMenuClick={handleMenuClick} />
       </div>
@@ -175,7 +174,7 @@ export default function Home() {
       <SimpleMap updateMarkers={updateMarkers} userId={userId} photo={photo} handlePinClick={handlePinClick} />
       {pinMenuToggle && <PinMenu pinData={exportData} />}
       <div className={`absolute right-0 top-14 z-10`}>
-        <AccountMenu toggleDropdown={toggleDropdown} dropdownToggle={dropdownToggle} handleSignOut={handleSignOut} />
+        <AccountMenu toggleDropdown={toggleDropdown} dropdownToggle={dropdownToggle} handleSignOut={handleSignOut} userId={userId} userName={userName ?? ''} photo={photo ?? ''} />
       </div>
     </main>
   );
