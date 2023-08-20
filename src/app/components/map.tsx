@@ -140,7 +140,7 @@ export default function SimpleMap({ updateMarkers, userId, photo, handlePinClick
         };
         mapRef.current?.off('click', handleClick);
         mapRef.current?.on('click', handleClick);
-        return () => {
+        return () => {11
             mapRef.current?.off('click', handleClick);
         };
     }, [markers, updateMarkers, userId]);
