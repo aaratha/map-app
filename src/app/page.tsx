@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 // import { getAnalytics } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth';
@@ -44,13 +45,17 @@ async function checkUserExists(userId: string): Promise<boolean> {
   return snapshot.exists();
 }
 
-const checkUserAndWriteData = async () => {
+async function checkUserAndWriteData(): Promise<void> {
   const userExists = await checkUserExists(firebase.auth().currentUser?.uid ?? '');
-  if (!userExists) { writeUserData(
-    firebase.auth().currentUser?.uid ?? '',
-    firebase.auth().currentUser?.displayName ?? '',
-    firebase.auth().currentUser?.email ?? '',
-    firebase.auth().currentUser?.photoURL ?? '');
+  if (!userExists) { 
+    const uid = firebase.auth().currentUser?.uid ?? '';
+    writeUserData(
+      uid,
+      firebase.auth().currentUser?.displayName ?? '',
+      firebase.auth().currentUser?.email ?? '',
+      firebase.auth().currentUser?.photoURL ?? ''
+    );
+    window.location.href = `/newUser?uid=${uid}`;
   }
 };
 
@@ -143,9 +148,9 @@ export default function Home() {
   if (!isSignedIn) {
     const auth = getAuth(app);
     return (
-      <main className="flex text-black min-h-screen flex-col items-center bg-gradient-to-b from-gray-200 to-gray-300">
-        <div>
-          <p>Please sign-in:</p>
+      <main className="flex text-black h-[100vh] flex-col items-center bg-white">
+        <div className='flex flex-col border m-auto p-10 border-green-600 shadow-md rounded-lg'>
+          <p className='text-center text-xl'>Please sign-in:</p>
           <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth} />
         </div>
       </main>
@@ -178,7 +183,7 @@ export default function Home() {
       <div className={`absolute right-0 top-14 z-10`}>
         <AccountMenu toggleDropdown={toggleDropdown} dropdownToggle={dropdownToggle} handleSignOut={handleSignOut} userId={userId} userName={userName ?? ''} photo={photo ?? ''} />
       </div>
-      <Footer />
+      <Footer userId={userId ?? ''} />
       <PlusSign />
     </main>
   );

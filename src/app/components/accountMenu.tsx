@@ -32,7 +32,7 @@ export default function AccountMenu({ toggleDropdown, dropdownToggle, handleSign
             <Link href={{ pathname: '/profile', query: { userId: userId, photo: photo, userName: userName } }}>
                 <button className=" justify-center flex w-full border-t border-b border-black border-opacity-25 hover:border-opacity-100 p-3 mt-3 hover:shadow-md text-lg">Profile</button>
             </Link>
-            <button onClick={handleSignOut} className="transition-all border border-black border-opacity-25 hover:scale-105 hover:border-opacity-100 hover:shadow-md p-2 mt-auto m-4 rounded-lg">Sign Out</button>
+            <button onClick={handleSignOut} className="transition-all border border-black border-opacity-25 hover:scale-105 hover:border-opacity-100 hover:shadow-md p-2 mt-auto m-4 mr-20 ml-20 rounded-lg">Sign Out</button>
         </div>
     )
 }
