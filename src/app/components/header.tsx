@@ -13,7 +13,7 @@ interface HeaderProps {
 export default function Header({userName, photo, handleMenuClick, toggleDropdown}: HeaderProps) {
     return(
         <div className='w-screen p-2 pl-3 pr-3 flex flex-row justify-between border-b border-black border-opacity-25 items-center shadow-md h-[7vh] z-20'>
-            <button className='border border-black border-opacity-0 hover:border-opacity-100 bg-green-600 p-2 pl-3 pr-3 rounded-lg hover:scale-105 hover:shadow-md transition-all ' onClick={handleMenuClick}>
+            <button className='border border-black border-opacity-0 hover:border-opacity-100 bg-green-600 p-3 pl-4 pr-4 rounded-lg hover:scale-105 hover:shadow-md transition-all ' onClick={handleMenuClick}>
                 <GiHamburgerMenu className='scale-125 text-white' />
             </button>
             <h1 className='text-xl'>PinIt!</h1>

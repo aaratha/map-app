@@ -54,3 +54,13 @@ body {
   transition: all 0.2s ease-in-out !important;
 }
 
+.pin-menu {
+  height: 0px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.pin-menu-open {
+  height: 200px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+

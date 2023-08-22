@@ -31,7 +31,7 @@ export default function newUser() {
         e.preventDefault();
         console.log(username)
         const db = getDatabase();
-        set(ref(db, `users/${userId}/username`), username);
+        set(ref(db, `users/${userId}/username`), username.toLowerCase());
         window.location.href = `/`;
     }
     return (

@@ -12,7 +12,7 @@ import { get, getDatabase, onValue, ref, set, update, child } from "firebase/dat
  * @param userId The ID of the user whose markers are being displayed.
  * @returns The SimpleMap component.
  */
-export default function SimpleMap({ updateMarkers, userId, photo, handlePinClick }: any ): any {
+export default function SimpleMap({ updateMarkers, userId, photo, handlePinClick, clickPinToggle, toggleClickPin }: any ): any {
     const geolocateRef = useRef<mapboxgl.GeolocateControl | null>(null);
     const mapRef = useRef<mapboxgl.Map | null>(null);
     const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]);
@@ -127,29 +127,35 @@ export default function SimpleMap({ updateMarkers, userId, photo, handlePinClick
 
     // Add a new marker when the map is clicked.
     useEffect(() => {
-        const handleClick = (e: mapboxgl.MapMouseEvent & { features?: mapboxgl.MapboxGeoJSONFeature[] }) => {
-            if (markerClicked) {
-                markerClicked = false;
-                return;
-            }
-            console.log('Click event:', e);
-            console.log(e.lngLat);
-            const newMarker = new mapboxgl.Marker()
-                .setLngLat(e.lngLat)
-            updateMarkers(newMarker);
-        };
-        mapRef.current?.off('click', handleClick);
-        mapRef.current?.on('click', handleClick);
-        return () => {11
+        if (clickPinToggle) {
+            const handleClick = (e: mapboxgl.MapMouseEvent & { features?: mapboxgl.MapboxGeoJSONFeature[] }) => {
+                if (markerClicked) {
+                    markerClicked = false;
+                    return;
+                }
+                console.log('Click event:', e);
+                console.log(e.lngLat);
+                const newMarker = new mapboxgl.Marker()
+                    .setLngLat(e.lngLat)
+                updateMarkers(newMarker);
+                toggleClickPin();
+            };
             mapRef.current?.off('click', handleClick);
-        };
-    }, [markers, updateMarkers, userId]);
+            mapRef.current?.on('click', handleClick);
+            return () => {
+                mapRef.current?.off('click', handleClick);
+            };
+        }
+    }, [markers, updateMarkers, userId, clickPinToggle]);
 
     // Render the map and "Find" button.
     return (
         <div className=' h-[93vh]'>
             <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
             <div id="map" className='overflow-hidden w-screen h-full m-auto'></div>
+            {clickPinToggle && (
+                <p className='absolute left-5 top-20 text-2xl text-white border border-green-600 p-2 rounded-lg bg-black bg-opacity-50 shadow-md'>Click anywhere</p>
+            )}
         </div>
     );
 }

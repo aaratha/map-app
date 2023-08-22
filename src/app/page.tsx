@@ -90,6 +90,7 @@ const app = firebase.initializeApp(firebaseConfig);
 
 const db = getDatabase(app);
 
+
 export default function Home() {
   const uiConfig = {
     // Popup signin flow rather than redirect flow.
@@ -145,6 +146,11 @@ export default function Home() {
     console.log(markers);
   }, [markers]);
 
+  const [clickPinToggle, setClickPinToggle] = useState(false);
+  function toggleClickPin() {
+    setClickPinToggle(!clickPinToggle);
+  }
+  
   if (!isSignedIn) {
     const auth = getAuth(app);
     return (
@@ -178,13 +184,13 @@ export default function Home() {
         <Menu menuToggle={menuToggle} handleMenuClick={handleMenuClick} />
       </div>
       <Header userName={userName ?? ''} photo={photo ?? ''} handleMenuClick={handleMenuClick} toggleDropdown={toggleDropdown} dropdownToggle={dropdownToggle}/>
-      <SimpleMap updateMarkers={updateMarkers} userId={userId} photo={photo} handlePinClick={handlePinClick} />
+      <SimpleMap updateMarkers={updateMarkers} userId={userId} photo={photo} handlePinClick={handlePinClick} toggleClickPin={toggleClickPin} clickPinToggle={clickPinToggle} />
       {pinMenuToggle && <PinMenu pinData={exportData} />}
       <div className={`absolute right-0 top-14 z-10`}>
         <AccountMenu toggleDropdown={toggleDropdown} dropdownToggle={dropdownToggle} handleSignOut={handleSignOut} userId={userId} userName={userName ?? ''} photo={photo ?? ''} />
       </div>
-      <Footer userId={userId ?? ''} />
-      <PlusSign />
+      <Footer userId={userId} />
+      <PlusSign toggleClickPin={toggleClickPin} clickPinToggle={clickPinToggle} />
     </main>
   );
 }
