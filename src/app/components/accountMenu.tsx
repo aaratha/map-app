@@ -29,8 +29,8 @@ export default function AccountMenu({ toggleDropdown, dropdownToggle, handleSign
     }, [menuRef, toggleDropdown, dropdownToggle]);
     return (
         <div ref={menuRef} className={`flex flex-col bg-white dropdown overflow-hidden w-[100vw] rounded-b-lg text-center shadow-md ${dropdownToggle ? 'dropdown-open' : ''}`}>
-            <Link href={{ pathname: '/profile', query: { userId: userId, photo: photo, userName: userName } }}>
-                <button className=" justify-center flex w-full border-t border-b border-black border-opacity-25 hover:border-opacity-100 p-3 mt-3 hover:shadow-md text-lg">Profile</button>
+            <Link href={{ pathname: '/profile', query: { userId: userId, photo: photo, userName: userName } }} className="flex w-full">
+                <button className="transition-all border w-full border-black border-opacity-25 hover:border-opacity-100 hover:shadow-md p-3 m-4 mr-10 ml-10 rounded-lg mt-10 hover:bg-gray-100">Profile</button>
             </Link>
             <button onClick={handleSignOut} className="transition-all border border-black border-opacity-25 hover:scale-105 hover:border-opacity-100 hover:shadow-md p-2 mt-auto m-4 mr-20 ml-20 rounded-lg">Sign Out</button>
         </div>

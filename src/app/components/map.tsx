@@ -12,7 +12,7 @@ import { get, getDatabase, onValue, ref, set, update, child } from "firebase/dat
  * @param userId The ID of the user whose markers are being displayed.
  * @returns The SimpleMap component.
  */
-export default function SimpleMap({ updateMarkers, userId, photo, handlePinClick, clickPinToggle, toggleClickPin }: any ): any {
+export default function SimpleMap({ updateMarkers, userId, photo, handlePinClick, clickPinToggle, toggleClickPin, togglePinCreation, pinCreationToggle }: any ): any {
     const geolocateRef = useRef<mapboxgl.GeolocateControl | null>(null);
     const mapRef = useRef<mapboxgl.Map | null>(null);
     const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]);
@@ -93,7 +93,7 @@ export default function SimpleMap({ updateMarkers, userId, photo, handlePinClick
                 const snapshot = await get(child(userRef, `${pinCreator}`))
                 const creatorPhoto = snapshot.val()?.photo || '';
                 console.log('creatorPhoto: ', creatorPhoto)
-                marker.getElement().innerHTML = `<img src=${creatorPhoto} style="border-radius: 50%; cursor: pointer" width="40" height="40" />`;
+                marker.getElement().innerHTML = `<img src=${creatorPhoto} style="border-radius: 50%; cursor: pointer" width="40" height="40"; />`;
                 marker.addTo(mapRef.current!);
             });
         }
@@ -138,6 +138,7 @@ export default function SimpleMap({ updateMarkers, userId, photo, handlePinClick
                 const newMarker = new mapboxgl.Marker()
                     .setLngLat(e.lngLat)
                 updateMarkers(newMarker);
+                togglePinCreation();
                 toggleClickPin();
             };
             mapRef.current?.off('click', handleClick);
@@ -154,7 +155,7 @@ export default function SimpleMap({ updateMarkers, userId, photo, handlePinClick
             <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
             <div id="map" className='overflow-hidden w-screen h-full m-auto'></div>
             {clickPinToggle && (
-                <p className='absolute left-5 top-20 text-2xl text-white border border-green-600 p-2 rounded-lg bg-black bg-opacity-50 shadow-md'>Click anywhere</p>
+                <p className='absolute left-5 top-20 text-2xl text-white border border-green-600 p-2 rounded-lg bg-black bg-opacity-50 shadow-md'>Tap anywhere</p>
             )}
         </div>
     );

@@ -9,6 +9,7 @@ import PinMenu from './components/pinMenu'
 import Profile from './profile/page'
 import Footer from './components/footer'
 import PlusSign from './components/plusSign'
+import PinCreation from './components/pinCreation'
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -116,8 +117,16 @@ export default function Home() {
   }, []);
 
   const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]);
-  const [exportData, setExportData] = useState<{ id: string, title: string, description: string, latitude: number, longitude: number } | null>(null); 
+  // const [exportData, setExportData] = useState<{ id: string, title: string, description: string, latitude: number, longitude: number } | null>(null); 
+  const [exportData, setExportData] = useState<{ lngLat: any } | null>(null);
   const [pinMenuToggle, setPinMenuToggle] = useState(false);
+  function togglePinMenu() {
+    setPinMenuToggle(!pinMenuToggle);
+  }
+  const [pinCreationToggle, setPinCreationToggle] = useState(false);
+  function togglePinCreation() {
+    setPinCreationToggle(!pinCreationToggle);
+  }
 
   const updateMarkers = (newMarker: mapboxgl.Marker) => {
     const markerExists = markers.some((marker) => {
@@ -167,14 +176,15 @@ export default function Home() {
   const userId = firebase.auth().currentUser?.uid
   const photo = firebase.auth().currentUser?.photoURL
   const handlePinClick = (pinData: any) => {
-    // setExportData({
-    //   id: pinData.id,
-    //   title: pinData.title,
-    //   description: pinData.description,
-    //   latitude: pinData._lngLat.lat,
-    //   longitude: pinData._lngLat.lng
-    // });
-    setPinMenuToggle(true);
+    setExportData({
+      // id: pinData.id,
+      // title: pinData.title,
+      // description: pinData.description,
+      // latitude: pinData._lngLat.lat,
+      // longitude: pinData._lngLat.lng
+      lngLat: pinData._lngLat
+    });
+    togglePinMenu();
     console.log(pinData._lngLat);
   }
   checkUserAndWriteData();
@@ -184,11 +194,12 @@ export default function Home() {
         <Menu menuToggle={menuToggle} handleMenuClick={handleMenuClick} />
       </div>
       <Header userName={userName ?? ''} photo={photo ?? ''} handleMenuClick={handleMenuClick} toggleDropdown={toggleDropdown} dropdownToggle={dropdownToggle}/>
-      <SimpleMap updateMarkers={updateMarkers} userId={userId} photo={photo} handlePinClick={handlePinClick} toggleClickPin={toggleClickPin} clickPinToggle={clickPinToggle} />
-      {pinMenuToggle && <PinMenu pinData={exportData} />}
-      <div className={`absolute right-0 top-14 z-10`}>
+      <SimpleMap updateMarkers={updateMarkers} userId={userId} photo={photo} handlePinClick={handlePinClick} toggleClickPin={toggleClickPin} clickPinToggle={clickPinToggle} togglePinCreation={togglePinCreation} pinCreationToggle={pinCreationToggle} />
+      <PinMenu pinData={exportData} pinMenuToggle={pinMenuToggle} togglePinMenu={togglePinMenu} />
+      <div className={`absolute top-10 z-10`}>
         <AccountMenu toggleDropdown={toggleDropdown} dropdownToggle={dropdownToggle} handleSignOut={handleSignOut} userId={userId} userName={userName ?? ''} photo={photo ?? ''} />
       </div>
+      <PinCreation togglePinCreation={togglePinCreation} pinCreationToggle={pinCreationToggle} />
       <Footer userId={userId} />
       <PlusSign toggleClickPin={toggleClickPin} clickPinToggle={clickPinToggle} />
     </main>
