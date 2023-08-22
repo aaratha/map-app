@@ -1,6 +1,6 @@
 {
     "name": "My awesome PWA app",
-    "short_name": "PWA App",
+    "short_name": "Pin It!",
     "icons": [
         {
             "src": "pwa-icon-maskable.png",
