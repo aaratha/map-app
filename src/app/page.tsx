@@ -134,6 +134,7 @@ export default function Home() {
       return lngLat.lng === newMarker.getLngLat().lng && lngLat.lat === newMarker.getLngLat().lat;
     });
     if (!markerExists) {
+      togglePinCreation();
       setMarkers([...markers, newMarker]);
       updatePins(firebase.auth().currentUser?.uid ?? '', [newMarker.getLngLat()]);
     }

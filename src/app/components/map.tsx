@@ -138,7 +138,6 @@ export default function SimpleMap({ updateMarkers, userId, photo, handlePinClick
                 const newMarker = new mapboxgl.Marker()
                     .setLngLat(e.lngLat)
                 updateMarkers(newMarker);
-                togglePinCreation();
                 toggleClickPin();
             };
             mapRef.current?.off('click', handleClick);
