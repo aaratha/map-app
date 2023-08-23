@@ -71,7 +71,6 @@ async function updatePins(userId: string, lngLat: any[]) {
     return { pinId: newPinId, lngLat: lngLatItem, creator: userId };
   }).filter((pin: any) => !existingPinIds.includes(pin.pinId));
   update(userRef, { pins: existingPins.concat(newPins) });
-  console.log('pins updated: ' + JSON.stringify(existingPins.concat(newPins)));
 }
 
 
@@ -123,9 +122,26 @@ export default function Home() {
   function togglePinMenu() {
     setPinMenuToggle(!pinMenuToggle);
   }
+
+  const [pinData, setPinData] = useState<mapboxgl.LngLat | null>(null);
+
+  const [submitCallback, setSubmitCallback] = useState<(() => void) | null>(null);
+  const handlePinSubmit = () => {
+    updatePins(firebase.auth().currentUser?.uid ?? '', [pinData]);
+    console.log('handlePinSubmit called');
+    if (submitCallback) {
+      submitCallback();
+      setSubmitCallback(null);
+      setPinData(null);
+    }
+  };
+
   const [pinCreationToggle, setPinCreationToggle] = useState(false);
-  function togglePinCreation() {
+  function togglePinCreation(onSubmit: () => void) {
     setPinCreationToggle(!pinCreationToggle);
+    if (onSubmit) {
+      setSubmitCallback(onSubmit);
+    }
   }
 
   const updateMarkers = (newMarker: mapboxgl.Marker) => {
@@ -134,9 +150,10 @@ export default function Home() {
       return lngLat.lng === newMarker.getLngLat().lng && lngLat.lat === newMarker.getLngLat().lat;
     });
     if (!markerExists) {
-      togglePinCreation();
-      setMarkers([...markers, newMarker]);
-      updatePins(firebase.auth().currentUser?.uid ?? '', [newMarker.getLngLat()]);
+      setPinData(newMarker.getLngLat());
+      togglePinCreation(() => {
+        setMarkers([...markers, newMarker]);
+      });
     }
   };
 
@@ -200,7 +217,7 @@ export default function Home() {
       <div className={`absolute top-10 z-10`}>
         <AccountMenu toggleDropdown={toggleDropdown} dropdownToggle={dropdownToggle} handleSignOut={handleSignOut} userId={userId} userName={userName ?? ''} photo={photo ?? ''} />
       </div>
-      <PinCreation togglePinCreation={togglePinCreation} pinCreationToggle={pinCreationToggle} />
+      <PinCreation togglePinCreation={togglePinCreation} pinCreationToggle={pinCreationToggle} handlePinSubmit={handlePinSubmit} />
       <Footer userId={userId} />
       <PlusSign toggleClickPin={toggleClickPin} clickPinToggle={clickPinToggle} />
     </main>
