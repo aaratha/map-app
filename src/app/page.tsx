@@ -60,7 +60,7 @@ async function checkUserAndWriteData(): Promise<void> {
   }
 };
 
-async function updatePins(userId: string, lngLat: any[]) {
+async function updatePins(userId: string, lngLat: any[], title: string, description: string) {
   const db = getDatabase();
   const userRef = ref(db, `users/${userId}`);
   const snapshot = await get(userRef);
@@ -68,7 +68,13 @@ async function updatePins(userId: string, lngLat: any[]) {
   const existingPinIds = existingPins.map((pin: any) => pin.pinId);
   const newPins = lngLat.map((lngLatItem: any) => {
     const newPinId = uuidv4();
-    return { pinId: newPinId, lngLat: lngLatItem, creator: userId };
+    return {
+      pinId: newPinId,
+      lngLat: lngLatItem,
+      creator: userId,
+      title: title,
+      description: description
+    };
   }).filter((pin: any) => !existingPinIds.includes(pin.pinId));
   update(userRef, { pins: existingPins.concat(newPins) });
 }
@@ -117,24 +123,27 @@ export default function Home() {
 
   const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]);
   // const [exportData, setExportData] = useState<{ id: string, title: string, description: string, latitude: number, longitude: number } | null>(null); 
-  const [exportData, setExportData] = useState<{ lngLat: any } | null>(null);
+  const [exportData, setExportData] = useState<any | null>(null);
   const [pinMenuToggle, setPinMenuToggle] = useState(false);
   function togglePinMenu() {
     setPinMenuToggle(!pinMenuToggle);
   }
 
-  const [pinData, setPinData] = useState<mapboxgl.LngLat | null>(null);
+  const [pinData, setPinData] = useState<any>(null);
 
   const [submitCallback, setSubmitCallback] = useState<(() => void) | null>(null);
-  const handlePinSubmit = () => {
-    updatePins(firebase.auth().currentUser?.uid ?? '', [pinData]);
-    console.log('handlePinSubmit called');
-    if (submitCallback) {
+
+  const handlePinSubmit = (formData: FormData) => {
+    const { title, description } = Object.fromEntries(formData.entries());
+    console.log('handlePinSubmit called with title:', title, 'and description:', description);
+    updatePins(firebase.auth().currentUser?.uid ?? '', [pinData], title as string, description as string);
+    if (typeof submitCallback === 'function') {
       submitCallback();
       setSubmitCallback(null);
       setPinData(null);
     }
   };
+
 
   const [pinCreationToggle, setPinCreationToggle] = useState(false);
   function togglePinCreation(onSubmit: () => void) {
@@ -196,11 +205,11 @@ export default function Home() {
   const handlePinClick = (pinData: any) => {
     setExportData({
       // id: pinData.id,
-      // title: pinData.title,
-      // description: pinData.description,
-      // latitude: pinData._lngLat.lat,
-      // longitude: pinData._lngLat.lng
-      lngLat: pinData._lngLat
+      title: pinData.title,
+      description: pinData.description,
+      latitude: pinData.marker._lngLat.lat,
+      longitude: pinData.marker._lngLat.lng,
+      creator: pinData.creator
     });
     togglePinMenu();
     console.log(pinData._lngLat);
@@ -213,7 +222,7 @@ export default function Home() {
       </div>
       <Header userName={userName ?? ''} photo={photo ?? ''} handleMenuClick={handleMenuClick} toggleDropdown={toggleDropdown} dropdownToggle={dropdownToggle}/>
       <SimpleMap updateMarkers={updateMarkers} userId={userId} photo={photo} handlePinClick={handlePinClick} toggleClickPin={toggleClickPin} clickPinToggle={clickPinToggle} togglePinCreation={togglePinCreation} pinCreationToggle={pinCreationToggle} />
-      <PinMenu pinData={exportData} pinMenuToggle={pinMenuToggle} togglePinMenu={togglePinMenu} />
+      <PinMenu pinData={exportData} pinMenuToggle={pinMenuToggle} togglePinMenu={togglePinMenu} app={app} />
       <div className={`absolute top-10 z-10`}>
         <AccountMenu toggleDropdown={toggleDropdown} dropdownToggle={dropdownToggle} handleSignOut={handleSignOut} userId={userId} userName={userName ?? ''} photo={photo ?? ''} />
       </div>

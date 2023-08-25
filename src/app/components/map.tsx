@@ -86,7 +86,7 @@ export default function SimpleMap({ updateMarkers, userId, photo, handlePinClick
                 
                 const marker = new mapboxgl.Marker({ element: el, anchor: 'center' }).setLngLat(pin.lngLat);
                 marker.getElement().addEventListener('click', () => {
-                    handleMarkerClick(marker);
+                    handleMarkerClick({ marker, title: pin.title, description: pin.description, creator: pin.creator });
                     markerClicked = true;
                 });
                 const pinCreator = pin.creator;
