@@ -6,7 +6,7 @@ import Head from 'next/head'
 import type { Metadata } from "next";
 
 const APP_NAME = "PinIt!";
-const APP_DEFAULT_TITLE = "My Awesome PWA App";
+const APP_DEFAULT_TITLE = "PinIt! Share cool spots with friends";
 const APP_TITLE_TEMPLATE = "%s - PinIt!";
 const APP_DESCRIPTION = "Best PWA app in the world!";
 
