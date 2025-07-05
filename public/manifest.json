@@ -1,6 +1,6 @@
 {
-    "name": "My awesome PWA app",
-    "short_name": "Pin It!",
+    "name": "PinIt!: Share cool spots with friends",
+    "short_name": "PinIt!",
     "icons": [
         {
             "src": "pwa-icon-maskable.png",
